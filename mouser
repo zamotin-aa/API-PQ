@@ -1,0 +1,18 @@
+Пример подключения к mouser.com (электронные компоненты) - запрос информации.
+
+let
+    url="https://api.mouser.com/api/v1/search/partnumberandmanufacturer?apiKey=((((( мой ключик )))))",
+
+    body=Поиск21,  // это параметризованный запрос
+
+    Parsed_JSON = Json.Document(body),
+
+    BuildQueryString = Uri.BuildQueryString(Parsed_JSON),
+
+    Источник = Json.Document(Web.Contents(url,[Headers = [#"Content-Type"="application/json"], Content = Text.ToBinary(body) ] )),
+
+    SearchResults = Источник[SearchResults],
+    Parts = SearchResults[Parts],
+    #"Преобразовано в таблицу" = Table.FromList(Parts, Splitter.SplitByNothing(), null, null, ExtraValues.Error)
+in
+    #"Преобразовано в таблицу"
